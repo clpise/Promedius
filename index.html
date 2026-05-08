@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Promedius — Tu rendimiento académico</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -21,1087 +20,843 @@
       --muted: #6b6b8a;
       --border: rgba(124,92,252,0.15);
       --card: rgba(255,255,255,0.03);
+      --radius: 16px;
     }
 
-```
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html, body {
-  background: var(--bg);
-  font-family: 'Outfit', sans-serif;
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
-
-/* ── PAGES ── */
-.page { display: none; min-height: 100vh; }
-.page.active { display: flex; flex-direction: column; }
-
-/* ══════════════════════════════════
-   LANDING
-══════════════════════════════════ */
-#landing {
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.landing-bg {
-  position: absolute; inset: 0; z-index: 0;
-  background:
-    radial-gradient(ellipse 60% 50% at 20% 20%, rgba(124,92,252,0.18) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 40% at 80% 80%, rgba(0,201,141,0.1) 0%, transparent 70%),
-    radial-gradient(ellipse 80% 60% at 50% 110%, rgba(124,92,252,0.08) 0%, transparent 60%);
-}
-
-.landing-grid {
-  position: absolute; inset: 0; z-index: 0;
-  background-image:
-    linear-gradient(rgba(124,92,252,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(124,92,252,0.04) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
-.landing-content {
-  position: relative; z-index: 1;
-  text-align: center;
-  padding: 40px 24px;
-  max-width: 560px;
-  animation: fadeUp 0.8s ease both;
-}
-
-.logo-mark {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 48px;
-}
-
-.logo-icon {
-  width: 40px; height: 40px;
-  background: var(--accent);
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 18px;
-  color: #fff;
-  box-shadow: 0 0 24px rgba(124,92,252,0.5);
-}
-
-.logo-text {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 22px;
-  color: #fff;
-  letter-spacing: -0.5px;
-}
-
-.landing-badge {
-  display: inline-block;
-  background: rgba(124,92,252,0.12);
-  border: 1px solid rgba(124,92,252,0.3);
-  color: var(--accent2);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 5px 14px;
-  border-radius: 100px;
-  margin-bottom: 24px;
-  letter-spacing: 0.5px;
-}
-
-.landing-title {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(36px, 8vw, 58px);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -1.5px;
-  margin-bottom: 20px;
-  color: #fff;
-}
-
-.landing-title span {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.landing-sub {
-  font-size: 16px;
-  color: var(--muted);
-  line-height: 1.6;
-  margin-bottom: 40px;
-  font-weight: 400;
-}
-
-.landing-btns {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-}
-
-.btn-primary {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  padding: 15px 36px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: 'Outfit', sans-serif;
-  transition: all 0.2s;
-  box-shadow: 0 4px 24px rgba(124,92,252,0.4);
-  width: 100%;
-  max-width: 280px;
-}
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,92,252,0.5); }
-.btn-primary:active { transform: translateY(0); }
-
-.btn-ghost {
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 14px 36px;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: 'Outfit', sans-serif;
-  transition: all 0.2s;
-  width: 100%;
-  max-width: 280px;
-}
-.btn-ghost:hover { border-color: var(--accent2); color: var(--accent2); }
-
-.landing-features {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  margin-top: 48px;
-  flex-wrap: wrap;
-}
-
-.feat-chip {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 13px;
-  color: var(--muted);
-}
-.feat-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
-
-/* ══════════════════════════════════
-   AUTH
-══════════════════════════════════ */
-#auth {
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  position: relative;
-  overflow: hidden;
-}
-
-#auth::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse 60% 60% at 50% 0%, rgba(124,92,252,0.12) 0%, transparent 70%);
-}
-
-.auth-card {
-  position: relative; z-index: 1;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 36px 32px;
-  width: 100%;
-  max-width: 400px;
-  animation: fadeUp 0.5s ease both;
-}
-
-.auth-back {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--muted);
-  font-size: 14px;
-  cursor: pointer;
-  margin-bottom: 28px;
-  transition: color 0.2s;
-  background: none; border: none; font-family: inherit;
-}
-.auth-back:hover { color: var(--text); }
-
-.auth-logo {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 28px;
-}
-
-.auth-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  margin-bottom: 6px;
-  letter-spacing: -0.5px;
-}
-
-.auth-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
-
-.auth-tabs {
-  display: flex;
-  background: var(--bg3);
-  border-radius: 12px;
-  padding: 4px;
-  margin-bottom: 24px;
-}
-
-.auth-tab {
-  flex: 1;
-  padding: 9px;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  border-radius: 9px;
-  transition: all 0.2s;
-  color: var(--muted);
-  border: none; background: none; font-family: inherit;
-}
-.auth-tab.active { background: var(--accent); color: #fff; }
-
-.form-group { margin-bottom: 16px; }
-.form-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-
-.form-input {
-  width: 100%;
-  background: var(--bg3);
-  border: 1.5px solid rgba(255,255,255,0.06);
-  border-radius: 12px;
-  color: var(--text);
-  font-size: 15px;
-  padding: 13px 16px;
-  font-family: 'Outfit', sans-serif;
-  outline: none;
-  transition: border 0.2s;
-}
-.form-input:focus { border-color: var(--accent); }
-.form-input::placeholder { color: #3a3a55; }
-
-.auth-error {
-  background: rgba(255,107,107,0.1);
-  border: 1px solid rgba(255,107,107,0.3);
-  color: var(--red);
-  font-size: 13px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  margin-bottom: 16px;
-  display: none;
-}
-
-.auth-success {
-  background: rgba(0,201,141,0.1);
-  border: 1px solid rgba(0,201,141,0.3);
-  color: var(--green);
-  font-size: 13px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  margin-bottom: 16px;
-  display: none;
-}
-
-/* ══════════════════════════════════
-   APP (dashboard)
-══════════════════════════════════ */
-#app { background: var(--bg); }
-
-/* Navbar */
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(8,8,16,0.9);
-  backdrop-filter: blur(12px);
-  position: sticky; top: 0; z-index: 100;
-}
-
-.nav-logo {
-  display: flex; align-items: center; gap: 8px;
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 18px;
-}
-
-.nav-logo-icon {
-  width: 30px; height: 30px;
-  background: var(--accent);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 800;
-  box-shadow: 0 0 14px rgba(124,92,252,0.4);
-}
-
-.nav-right { display: flex; align-items: center; gap: 10px; }
-
-.nav-user {
-  font-size: 13px;
-  color: var(--muted);
-  max-width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.btn-logout {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  color: var(--muted);
-  border-radius: 10px;
-  padding: 7px 14px;
-  font-size: 13px;
-  cursor: pointer;
-  font-family: 'Outfit', sans-serif;
-  transition: all 0.2s;
-}
-.btn-logout:hover { border-color: var(--red); color: var(--red); }
-
-/* Main content */
-.app-content {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 24px 16px 80px;
-}
-
-/* Summary bar */
-.summary-bar {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 28px;
-}
-
-.summary-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 16px;
-  text-align: center;
-}
-
-.summary-value {
-  font-family: 'Syne', sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.summary-label {
-  font-size: 11px;
-  color: var(--muted);
-  font-weight: 500;
-  letter-spacing: 0.3px;
-}
-
-/* Section header */
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.section-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-}
-
-.btn-add {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 9px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: 'Outfit', sans-serif;
-  transition: all 0.2s;
-  box-shadow: 0 2px 12px rgba(124,92,252,0.3);
-}
-.btn-add:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(124,92,252,0.4); }
-
-/* Ramo cards */
-.ramos-list { display: flex; flex-direction: column; gap: 10px; }
-
-.ramo-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  overflow: hidden;
-  transition: border-color 0.3s;
-}
-
-.ramo-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 20px;
-  cursor: pointer;
-}
-
-.ramo-left { display: flex; align-items: center; gap: 12px; }
-
-.ramo-color-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.ramo-nombre {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.ramo-right { display: flex; align-items: center; gap: 12px; }
-
-.ramo-prom {
-  font-family: 'Syne', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-}
-
-.ramo-chevron {
-  color: var(--muted);
-  font-size: 16px;
-  transition: transform 0.3s;
-}
-.ramo-chevron.open { transform: rotate(180deg); }
-
-.ramo-body { display: none; padding: 0 20px 20px; }
-.ramo-body.open { display: block; }
-
-.ramo-divider {
-  height: 1px;
-  background: rgba(255,255,255,0.05);
-  margin-bottom: 16px;
-}
-
-/* Progress bar */
-.progress-wrap { margin-bottom: 16px; }
-.progress-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-.progress-bar {
-  height: 4px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 2px;
-  overflow: hidden;
-}
-.progress-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 0.5s ease;
-}
-
-/* Evaluaciones */
-.eval-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-
-.eval-row {
-  display: grid;
-  grid-template-columns: 1fr auto auto auto;
-  gap: 8px;
-  align-items: center;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 12px;
-  padding: 10px 12px;
-}
-
-.eval-nombre { font-size: 13px; color: var(--text); font-weight: 500; }
-.eval-pct { font-size: 11px; color: var(--muted); font-weight: 600; white-space: nowrap; }
-
-.eval-input {
-  width: 52px;
-  background: rgba(255,255,255,0.06);
-  border: 1.5px solid rgba(255,255,255,0.08);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 14px;
-  padding: 5px 6px;
-  text-align: center;
-  outline: none;
-  font-family: 'Outfit', sans-serif;
-  transition: border 0.2s;
-  -moz-appearance: textfield;
-}
-.eval-input::-webkit-inner-spin-button,
-.eval-input::-webkit-outer-spin-button { -webkit-appearance: none; }
-.eval-input:focus { border-color: var(--accent); }
-
-.eval-delete {
-  background: none; border: none;
-  color: rgba(255,107,107,0.3);
-  cursor: pointer;
-  font-size: 16px;
-  padding: 2px 4px;
-  transition: color 0.2s;
-  line-height: 1;
-}
-.eval-delete:hover { color: var(--red); }
-
-/* Stats row */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.stat-box {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 12px;
-  padding: 10px;
-  text-align: center;
-}
-
-.stat-val {
-  font-family: 'Syne', sans-serif;
-  font-size: 17px;
-  font-weight: 700;
-  line-height: 1;
-  margin-bottom: 3px;
-}
-.stat-lbl { font-size: 10px; color: var(--muted); font-weight: 500; }
-
-/* Add eval form */
-.add-eval-form {
-  background: rgba(124,92,252,0.05);
-  border: 1px solid rgba(124,92,252,0.15);
-  border-radius: 14px;
-  padding: 14px;
-  margin-bottom: 12px;
-  display: none;
-}
-.add-eval-form.open { display: block; }
-
-.add-eval-inputs {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.add-eval-row2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.mini-input {
-  width: 100%;
-  background: var(--bg3);
-  border: 1.5px solid rgba(255,255,255,0.06);
-  border-radius: 10px;
-  color: var(--text);
-  font-size: 14px;
-  padding: 10px 12px;
-  font-family: 'Outfit', sans-serif;
-  outline: none;
-  transition: border 0.2s;
-}
-.mini-input:focus { border-color: var(--accent); }
-.mini-input::placeholder { color: #3a3a55; }
-
-.mini-label { font-size: 11px; color: var(--muted); margin-bottom: 5px; font-weight: 500; }
-
-.add-eval-btns { display: flex; gap: 8px; }
-
-.btn-confirm {
-  flex: 1;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: 'Outfit', sans-serif;
-  transition: opacity 0.2s;
-}
-.btn-confirm:hover { opacity: 0.85; }
-
-.btn-cancel-sm {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  color: var(--muted);
-  border-radius: 10px;
-  padding: 10px 16px;
-  font-size: 13px;
-  cursor: pointer;
-  font-family: 'Outfit', sans-serif;
-}
-
-.btn-add-eval {
-  width: 100%;
-  background: transparent;
-  border: 1.5px dashed rgba(124,92,252,0.25);
-  color: var(--accent2);
-  border-radius: 12px;
-  padding: 10px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: 'Outfit', sans-serif;
-  transition: all 0.2s;
-}
-.btn-add-eval:hover { border-color: var(--accent); background: rgba(124,92,252,0.05); }
-
-/* Ramo actions */
-.ramo-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.btn-delete-ramo {
-  background: transparent;
-  border: 1px solid rgba(255,107,107,0.2);
-  color: rgba(255,107,107,0.5);
-  border-radius: 10px;
-  padding: 8px 14px;
-  font-size: 12px;
-  cursor: pointer;
-  font-family: 'Outfit', sans-serif;
-  transition: all 0.2s;
-}
-.btn-delete-ramo:hover { border-color: var(--red); color: var(--red); }
-
-/* Empty state */
-.empty-state {
-  text-align: center;
-  padding: 60px 24px;
-}
-
-.empty-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-  display: block;
-}
-
-.empty-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.empty-sub { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 24px; }
-
-/* Modal */
-.modal-overlay {
-  position: fixed; inset: 0; z-index: 200;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(4px);
-  display: none;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 16px;
-}
-.modal-overlay.open { display: flex; }
-
-.modal {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 28px 24px;
-  width: 100%;
-  max-width: 420px;
-  animation: slideUp 0.3s ease both;
-}
-
-.modal-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  margin-bottom: 20px;
-  letter-spacing: -0.3px;
-}
-
-.color-picker {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-}
-
-.color-opt {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: all 0.2s;
-}
-.color-opt.selected { border-color: #fff; transform: scale(1.15); }
-
-.modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-
-/* Loading */
-.loader {
-  display: flex; align-items: center; justify-content: center;
-  min-height: 200px;
-}
-
-.spinner {
-  width: 32px; height: 32px;
-  border: 3px solid rgba(124,92,252,0.2);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: 24px; left: 50%;
-  transform: translateX(-50%) translateY(100px);
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 20px;
-  font-size: 13px;
-  font-weight: 500;
-  z-index: 300;
-  transition: transform 0.3s ease;
-  white-space: nowrap;
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
-.toast.success { border-color: rgba(0,201,141,0.4); color: var(--green); }
-.toast.error { border-color: rgba(255,107,107,0.4); color: var(--red); }
-
-/* Colors */
-.c-green { color: var(--green); }
-.c-yellow { color: var(--yellow); }
-.c-red { color: var(--red); }
-.c-muted { color: var(--muted); }
-.c-accent { color: var(--accent2); }
-
-/* Animations */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Responsive */
-@media (min-width: 480px) {
-  .landing-btns { flex-direction: row; justify-content: center; }
-  .add-eval-inputs { grid-template-columns: 1fr auto auto; }
-}
-```
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: var(--bg);
+      font-family: 'Outfit', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+    .page { display: none; min-height: 100vh; }
+    .page.active { display: flex; flex-direction: column; }
+
+    /* ══ INPUT BASE ══ */
+    input, button { font-family: 'Outfit', sans-serif; }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    /* ══════════════════════════════
+       LANDING
+    ══════════════════════════════ */
+    #landing {
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 40px 24px;
+    }
+
+    .land-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 15%, rgba(124,92,252,0.2) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 40% at 85% 85%, rgba(0,201,141,0.1) 0%, transparent 65%);
+    }
+    .land-grid {
+      position: absolute; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(124,92,252,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,92,252,0.05) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+
+    .land-content {
+      position: relative; z-index: 1;
+      text-align: center;
+      max-width: 520px;
+      width: 100%;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      margin-bottom: 44px;
+    }
+    .brand-icon {
+      width: 42px; height: 42px;
+      background: var(--accent);
+      border-radius: 13px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; color: #fff;
+      box-shadow: 0 0 28px rgba(124,92,252,0.55);
+    }
+    .brand-name {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; color: #fff;
+    }
+
+    .land-badge {
+      display: inline-block;
+      background: rgba(124,92,252,0.1);
+      border: 1px solid rgba(124,92,252,0.25);
+      color: var(--accent2);
+      font-size: 12px; font-weight: 600;
+      padding: 5px 16px; border-radius: 100px;
+      margin-bottom: 22px; letter-spacing: 0.4px;
+    }
+
+    .land-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(34px, 8vw, 56px);
+      font-weight: 800; line-height: 1.05; letter-spacing: -1.5px;
+      color: #fff; margin-bottom: 18px;
+    }
+    .land-title span {
+      background: linear-gradient(135deg, var(--accent), var(--accent2) 50%, var(--green));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .land-sub {
+      font-size: 16px; color: var(--muted); line-height: 1.65;
+      margin-bottom: 36px; font-weight: 400;
+    }
+
+    .land-btns {
+      display: flex; flex-direction: column; gap: 10px; align-items: center;
+    }
+    @media(min-width: 420px) { .land-btns { flex-direction: row; justify-content: center; } }
+
+    .land-chips {
+      display: flex; gap: 18px; justify-content: center;
+      flex-wrap: wrap; margin-top: 44px;
+    }
+    .chip {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 13px; color: var(--muted);
+    }
+    .chip-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+    /* ══════════════════════════════
+       AUTH
+    ══════════════════════════════ */
+    #auth {
+      align-items: center; justify-content: center;
+      padding: 24px; position: relative; overflow: hidden;
+    }
+    #auth::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(124,92,252,0.1) 0%, transparent 70%);
+    }
+
+    .auth-card {
+      position: relative; z-index: 1;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px 28px;
+      width: 100%; max-width: 400px;
+      animation: fadeUp 0.45s ease both;
+    }
+
+    .auth-back {
+      display: flex; align-items: center; gap: 7px;
+      color: var(--muted); font-size: 14px; cursor: pointer;
+      margin-bottom: 24px; transition: color 0.2s;
+      background: none; border: none; padding: 0;
+    }
+    .auth-back:hover { color: var(--text); }
+
+    .auth-brand { display: flex; align-items: center; gap: 9px; margin-bottom: 24px; }
+
+    .auth-title {
+      font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800;
+      margin-bottom: 5px; letter-spacing: -0.4px;
+    }
+    .auth-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+
+    .auth-tabs {
+      display: flex; background: var(--bg3);
+      border-radius: 12px; padding: 4px; margin-bottom: 22px;
+    }
+    .auth-tab {
+      flex: 1; padding: 9px; text-align: center;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      border-radius: 9px; transition: all 0.2s;
+      color: var(--muted); border: none; background: none;
+    }
+    .auth-tab.active { background: var(--accent); color: #fff; }
+
+    .alert {
+      font-size: 13px; padding: 11px 14px;
+      border-radius: 11px; margin-bottom: 16px; display: none; font-weight: 500;
+    }
+    .alert-error { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.25); color: var(--red); }
+    .alert-success { background: rgba(0,201,141,0.1); border: 1px solid rgba(0,201,141,0.25); color: var(--green); }
+
+    /* ══ FORM ══ */
+    .fgroup { margin-bottom: 14px; }
+    .flabel {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--muted); margin-bottom: 7px; letter-spacing: 0.3px; text-transform: uppercase;
+    }
+    .finput {
+      width: 100%;
+      background: var(--bg3);
+      border: 1.5px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      color: var(--text); font-size: 15px; font-weight: 400;
+      padding: 13px 15px; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      display: block;
+    }
+    .finput:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(124,92,252,0.12);
+    }
+    .finput::placeholder { color: #35354f; }
+
+    /* ══ BUTTONS ══ */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 7px; border: none; cursor: pointer;
+      font-size: 15px; font-weight: 600; border-radius: 12px;
+      padding: 13px 24px; transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--accent); color: #fff;
+      box-shadow: 0 4px 20px rgba(124,92,252,0.35);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(124,92,252,0.5); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      border: 1.5px solid rgba(255,255,255,0.1);
+    }
+    .btn-ghost:hover { border-color: var(--accent2); color: var(--accent2); }
+
+    .btn-sm { font-size: 13px; padding: 9px 16px; border-radius: 10px; }
+    .btn-full { width: 100%; }
+
+    .btn-danger {
+      background: transparent; color: rgba(255,107,107,0.5);
+      border: 1px solid rgba(255,107,107,0.18);
+      font-size: 12px; padding: 8px 14px; border-radius: 9px;
+    }
+    .btn-danger:hover { color: var(--red); border-color: rgba(255,107,107,0.5); }
+
+    /* ══════════════════════════════
+       APP
+    ══════════════════════════════ */
+    #app { background: var(--bg); }
+
+    .navbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      background: rgba(8,8,16,0.85);
+      backdrop-filter: blur(16px);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 8px; }
+    .nav-icon {
+      width: 32px; height: 32px; background: var(--accent);
+      border-radius: 9px; display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px;
+      box-shadow: 0 0 16px rgba(124,92,252,0.4);
+    }
+    .nav-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 17px; }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .nav-user { font-size: 13px; color: var(--muted); max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .nav-plan {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+      padding: 3px 8px; border-radius: 100px;
+      background: rgba(124,92,252,0.15); color: var(--accent2); border: 1px solid rgba(124,92,252,0.25);
+    }
+    .nav-plan.premium { background: rgba(247,201,72,0.15); color: var(--yellow); border-color: rgba(247,201,72,0.3); }
+
+    .app-body { max-width: 600px; margin: 0 auto; padding: 24px 16px 100px; }
+
+    /* Summary */
+    .summary {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin-bottom: 28px;
+    }
+    .sum-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius); padding: 16px 12px; text-align: center;
+      transition: border-color 0.3s;
+    }
+    .sum-val {
+      font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800;
+      letter-spacing: -1px; line-height: 1; margin-bottom: 5px;
+    }
+    .sum-lbl { font-size: 11px; color: var(--muted); font-weight: 500; }
+
+    /* Plan banner */
+    .plan-banner {
+      background: linear-gradient(135deg, rgba(124,92,252,0.08), rgba(167,139,250,0.05));
+      border: 1px solid rgba(124,92,252,0.2);
+      border-radius: var(--radius); padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; gap: 12px;
+    }
+    .plan-banner-text { font-size: 13px; color: var(--muted); }
+    .plan-banner-text strong { color: var(--accent2); }
+
+    /* Section */
+    .sec-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .sec-title {
+      font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -0.3px;
+    }
+
+    /* Ramo card */
+    .ramos { display: flex; flex-direction: column; gap: 10px; }
+
+    .ramo {
+      background: var(--card);
+      border: 1.5px solid rgba(255,255,255,0.06);
+      border-radius: 20px; overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .ramo-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 20px; cursor: pointer; user-select: none;
+    }
+    .ramo-head-left { display: flex; align-items: center; gap: 12px; }
+    .rdot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .rname { font-size: 15px; font-weight: 600; }
+    .ramo-head-right { display: flex; align-items: center; gap: 10px; }
+    .rprom {
+      font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+    .rchev {
+      color: var(--muted); font-size: 15px;
+      transition: transform 0.3s; display: inline-block;
+    }
+    .rchev.open { transform: rotate(180deg); }
+
+    .ramo-body { display: none; padding: 0 18px 20px; }
+    .ramo-body.open { display: block; }
+    .rdivider { height: 1px; background: rgba(255,255,255,0.05); margin-bottom: 16px; }
+
+    /* Progress */
+    .prog-wrap { margin-bottom: 16px; }
+    .prog-labels {
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: var(--muted); margin-bottom: 7px; font-weight: 500;
+    }
+    .prog-bar { height: 5px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+
+    /* Stats grid */
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+    .stat {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px; padding: 11px 8px; text-align: center;
+    }
+    .stat-v {
+      font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700;
+      line-height: 1; margin-bottom: 4px;
+    }
+    .stat-l { font-size: 10px; color: var(--muted); font-weight: 500; line-height: 1.3; }
+
+    /* Examen alert */
+    .examen-alert {
+      border-radius: 12px; padding: 12px 14px;
+      font-size: 13px; font-weight: 500; margin-bottom: 14px;
+      line-height: 1.4;
+    }
+    .examen-alert.need {
+      background: rgba(247,201,72,0.08);
+      border: 1px solid rgba(247,201,72,0.2);
+      color: var(--yellow);
+    }
+    .examen-alert.pass {
+      background: rgba(0,201,141,0.08);
+      border: 1px solid rgba(0,201,141,0.2);
+      color: var(--green);
+    }
+    .examen-alert.fail {
+      background: rgba(255,107,107,0.08);
+      border: 1px solid rgba(255,107,107,0.2);
+      color: var(--red);
+    }
+    .examen-alert.info {
+      background: rgba(124,92,252,0.07);
+      border: 1px solid rgba(124,92,252,0.18);
+      color: var(--accent2);
+    }
+
+    /* Eval list */
+    .eval-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
+
+    .eval-row {
+      display: grid;
+      grid-template-columns: 1fr 44px 56px 28px;
+      gap: 8px; align-items: center;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 11px; padding: 10px 12px;
+    }
+    .eval-row.is-examen {
+      background: rgba(124,92,252,0.05);
+      border-color: rgba(124,92,252,0.18);
+    }
+
+    .eval-name { font-size: 13px; font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .eval-pct { font-size: 11px; color: var(--muted); font-weight: 600; text-align: center; }
+
+    .eval-input {
+      width: 100%; background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.08);
+      border-radius: 8px; color: var(--text);
+      font-size: 14px; font-weight: 500;
+      padding: 6px 4px; text-align: center; outline: none;
+      transition: border-color 0.2s;
+    }
+    .eval-input:focus { border-color: var(--accent); }
+
+    .eval-del {
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,107,107,0.3); font-size: 18px; line-height: 1;
+      transition: color 0.2s; padding: 0; text-align: center;
+    }
+    .eval-del:hover { color: var(--red); }
+
+    /* Add eval form */
+    .add-form {
+      background: rgba(124,92,252,0.04);
+      border: 1.5px dashed rgba(124,92,252,0.2);
+      border-radius: 14px; padding: 16px;
+      margin-bottom: 10px; display: none;
+    }
+    .add-form.open { display: block; }
+
+    .add-form-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-top: 10px; margin-bottom: 12px;
+    }
+
+    .mini-lbl { font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .mini-input {
+      width: 100%; background: var(--bg3);
+      border: 1.5px solid rgba(255,255,255,0.07);
+      border-radius: 10px; color: var(--text);
+      font-size: 14px; padding: 11px 12px; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .mini-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,92,252,0.1); }
+    .mini-input::placeholder { color: #35354f; }
+
+    .add-form-btns { display: flex; gap: 8px; }
+
+    .btn-add-eval {
+      width: 100%; background: transparent;
+      border: 1.5px dashed rgba(124,92,252,0.2);
+      color: var(--accent2); border-radius: 11px;
+      padding: 10px; font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-add-eval:hover { border-color: var(--accent); background: rgba(124,92,252,0.06); }
+
+    /* Ramo actions */
+    .ramo-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; }
+
+    /* Empty */
+    .empty {
+      text-align: center; padding: 56px 24px;
+      animation: fadeUp 0.4s ease both;
+    }
+    .empty-emoji { font-size: 44px; margin-bottom: 14px; display: block; }
+    .empty-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .empty-sub { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+
+    /* Loader */
+    .loader { display: flex; align-items: center; justify-content: center; padding: 60px; }
+    .spin {
+      width: 30px; height: 30px;
+      border: 3px solid rgba(124,92,252,0.15);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    /* ══ MODALS ══ */
+    .overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+      display: none; align-items: flex-end; justify-content: center;
+      padding: 16px;
+    }
+    .overlay.open { display: flex; }
+    @media(min-width: 480px) { .overlay { align-items: center; } }
+
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 24px; padding: 28px 24px;
+      width: 100%; max-width: 420px;
+      animation: slideUp 0.3s ease both;
+    }
+    .modal-title {
+      font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800;
+      margin-bottom: 20px; letter-spacing: -0.3px;
+    }
+    .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+
+    /* Color picker */
+    .color-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .copt {
+      width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+      border: 2.5px solid transparent; transition: all 0.2s;
+    }
+    .copt.sel { border-color: #fff; transform: scale(1.15); }
+
+    /* Premium modal */
+    .premium-modal { text-align: center; }
+    .premium-icon { font-size: 40px; margin-bottom: 12px; }
+    .premium-title {
+      font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800;
+      margin-bottom: 8px; letter-spacing: -0.3px;
+    }
+    .premium-sub { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+    .premium-features { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; text-align: left; }
+    .pf-item {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px; padding: 10px 14px;
+    }
+    .pf-icon { font-size: 16px; flex-shrink: 0; }
+    .premium-price {
+      font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800;
+      color: var(--yellow); margin-bottom: 4px;
+    }
+    .premium-price-sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--bg2); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 11px 20px;
+      font-size: 13px; font-weight: 500; z-index: 300;
+      transition: transform 0.3s ease; white-space: nowrap;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.ok { border-color: rgba(0,201,141,0.35); color: var(--green); }
+    .toast.err { border-color: rgba(255,107,107,0.35); color: var(--red); }
+
+    /* Colors */
+    .cg { color: var(--green); }
+    .cy { color: var(--yellow); }
+    .cr { color: var(--red); }
+    .cm { color: var(--muted); }
+    .ca { color: var(--accent2); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(36px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
 <!-- ══ LANDING ══ -->
-
 <div id="landing" class="page active">
-  <div class="landing-bg"></div>
-  <div class="landing-grid"></div>
-  <div class="landing-content">
-    <div class="logo-mark">
-      <div class="logo-icon">P</div>
-      <span class="logo-text">Promedius</span>
+  <div class="land-bg"></div>
+  <div class="land-grid"></div>
+  <div class="land-content">
+    <div class="brand">
+      <div class="brand-icon">P</div>
+      <span class="brand-name">Promedius</span>
     </div>
-    <div class="landing-badge">✦ Para estudiantes universitarios</div>
-    <h1 class="landing-title">Tu rendimiento<br/><span>académico claro</span></h1>
-    <p class="landing-sub">Organiza tus ramos, ingresa tus notas y calcula automáticamente tu promedio. Siempre guardado, siempre contigo.</p>
-    <div class="landing-btns">
-      <button class="btn-primary" onclick="showAuth('register')">Crear cuenta gratis</button>
-      <button class="btn-ghost" onclick="showAuth('login')">Iniciar sesión</button>
+    <div class="land-badge">✦ Para estudiantes universitarios</div>
+    <h1 class="land-title">Tu rendimiento<br/><span>académico, claro.</span></h1>
+    <p class="land-sub">Crea tus ramos, ingresa tus notas y calcula automáticamente tu promedio y lo que necesitas en el examen. Siempre guardado en la nube.</p>
+    <div class="land-btns">
+      <button class="btn btn-primary" onclick="showAuth('register')">Crear cuenta gratis</button>
+      <button class="btn btn-ghost" onclick="showAuth('login')">Iniciar sesión</button>
     </div>
-    <div class="landing-features">
-      <div class="feat-chip"><div class="feat-dot"></div>Cálculo automático</div>
-      <div class="feat-chip"><div class="feat-dot" style="background:var(--accent2)"></div>Datos en la nube</div>
-      <div class="feat-chip"><div class="feat-dot" style="background:var(--yellow)"></div>Nota mínima para aprobar</div>
+    <div class="land-chips">
+      <div class="chip"><div class="chip-dot" style="background:var(--green)"></div>Cálculo automático</div>
+      <div class="chip"><div class="chip-dot" style="background:var(--accent2)"></div>Guardado en la nube</div>
+      <div class="chip"><div class="chip-dot" style="background:var(--yellow)"></div>Nota para el examen</div>
     </div>
   </div>
 </div>
 
 <!-- ══ AUTH ══ -->
-
 <div id="auth" class="page">
   <div class="auth-card">
     <button class="auth-back" onclick="showPage('landing')">← Volver</button>
-    <div class="auth-logo">
-      <div class="logo-icon" style="width:32px;height:32px;font-size:14px;border-radius:9px">P</div>
-      <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px">Promedius</span>
+    <div class="auth-brand">
+      <div class="brand-icon" style="width:32px;height:32px;font-size:14px;border-radius:9px">P</div>
+      <span class="brand-name" style="font-size:18px">Promedius</span>
     </div>
     <div class="auth-title" id="authTitle">Crear cuenta</div>
     <div class="auth-sub" id="authSub">Empieza gratis, sin tarjeta de crédito</div>
 
-```
-<div class="auth-tabs">
-  <button class="auth-tab active" id="tabRegister" onclick="switchTab('register')">Registrarse</button>
-  <button class="auth-tab" id="tabLogin" onclick="switchTab('login')">Iniciar sesión</button>
-</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabReg" onclick="switchTab('register')">Registrarse</button>
+      <button class="auth-tab" id="tabLog" onclick="switchTab('login')">Iniciar sesión</button>
+    </div>
 
-<div id="authError" class="auth-error"></div>
-<div id="authSuccess" class="auth-success"></div>
+    <div id="authErr" class="alert alert-error"></div>
+    <div id="authOk" class="alert alert-success"></div>
 
-<div class="form-group" id="nameGroup">
-  <label class="form-label">Nombre</label>
-  <input class="form-input" id="inputName" type="text" placeholder="Tu nombre"/>
-</div>
-<div class="form-group">
-  <label class="form-label">Correo electrónico</label>
-  <input class="form-input" id="inputEmail" type="email" placeholder="correo@universidad.cl"/>
-</div>
-<div class="form-group">
-  <label class="form-label">Contraseña</label>
-  <input class="form-input" id="inputPassword" type="password" placeholder="Mínimo 6 caracteres"/>
-</div>
-
-<button class="btn-primary" style="width:100%;margin-top:4px" id="authBtn" onclick="handleAuth()">
-  Crear cuenta
-</button>
-```
-
+    <div class="fgroup" id="nameGroup">
+      <label class="flabel">Nombre</label>
+      <input class="finput" id="iName" type="text" placeholder="Tu nombre completo"/>
+    </div>
+    <div class="fgroup">
+      <label class="flabel">Correo electrónico</label>
+      <input class="finput" id="iEmail" type="email" placeholder="correo@universidad.cl"/>
+    </div>
+    <div class="fgroup">
+      <label class="flabel">Contraseña</label>
+      <input class="finput" id="iPass" type="password" placeholder="Mínimo 6 caracteres"/>
+    </div>
+    <button class="btn btn-primary btn-full" id="authBtn" style="margin-top:6px" onclick="handleAuth()">Crear cuenta</button>
   </div>
 </div>
 
 <!-- ══ APP ══ -->
-
 <div id="app" class="page">
   <nav class="navbar">
-    <div class="nav-logo">
-      <div class="nav-logo-icon">P</div>
-      Promedius
+    <div class="nav-brand">
+      <div class="nav-icon">P</div>
+      <span class="nav-name">Promedius</span>
     </div>
     <div class="nav-right">
       <span class="nav-user" id="navUser"></span>
-      <button class="btn-logout" onclick="handleLogout()">Salir</button>
+      <span class="nav-plan" id="navPlan">FREE</span>
+      <button class="btn btn-ghost btn-sm" onclick="handleLogout()">Salir</button>
     </div>
   </nav>
 
-  <div class="app-content">
+  <div class="app-body">
     <!-- Summary -->
-    <div class="summary-bar" id="summaryBar">
-      <div class="summary-card">
-        <div class="summary-value c-accent" id="sumPromedio">—</div>
-        <div class="summary-label">Promedio general</div>
+    <div class="summary">
+      <div class="sum-card">
+        <div class="sum-val cm" id="sumProm">—</div>
+        <div class="sum-lbl">Promedio general</div>
       </div>
-      <div class="summary-card">
-        <div class="summary-value" id="sumRamos" style="color:var(--text)">0</div>
-        <div class="summary-label">Ramos activos</div>
+      <div class="sum-card">
+        <div class="sum-val" id="sumRamos" style="color:var(--text)">0</div>
+        <div class="sum-lbl">Ramos activos</div>
       </div>
-      <div class="summary-card">
-        <div class="summary-value" id="sumAprobados" style="color:var(--green)">0</div>
-        <div class="summary-label">Aprobados</div>
+      <div class="sum-card">
+        <div class="sum-val cg" id="sumAprov">0</div>
+        <div class="sum-lbl">Aprobados</div>
       </div>
     </div>
 
-```
-<!-- Ramos -->
-<div class="section-header">
-  <div class="section-title">Mis Ramos</div>
-  <button class="btn-add" onclick="openModal()">+ Agregar ramo</button>
-</div>
+    <!-- Plan banner (free) -->
+    <div class="plan-banner" id="planBanner">
+      <div class="plan-banner-text">
+        Plan <strong>Gratuito</strong> — 1 ramo · 2 evaluaciones por ramo
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openPremium()">⚡ Premium</button>
+    </div>
 
-<div id="ramosList" class="ramos-list">
-  <div class="loader"><div class="spinner"></div></div>
-</div>
-```
+    <!-- Ramos -->
+    <div class="sec-header">
+      <div class="sec-title">Mis Ramos</div>
+      <button class="btn btn-primary btn-sm" onclick="openModal()">+ Agregar ramo</button>
+    </div>
 
+    <div class="ramos" id="ramosList">
+      <div class="loader"><div class="spin"></div></div>
+    </div>
   </div>
 </div>
 
 <!-- ══ MODAL NUEVO RAMO ══ -->
-
-<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+<div class="overlay" id="moRamo" onclick="closeOverlay(event,'moRamo')">
   <div class="modal">
     <div class="modal-title">Nuevo ramo</div>
-    <div class="form-group">
-      <label class="form-label">Nombre del ramo</label>
-      <input class="form-input" id="modalNombre" placeholder="Ej: Cálculo I, Estadística..."/>
+    <div class="fgroup">
+      <label class="flabel">Nombre del ramo</label>
+      <input class="finput" id="mNombre" placeholder="Ej: Cálculo I, Estadística..."/>
     </div>
-    <div class="form-group">
-      <label class="form-label">Color</label>
-      <div class="color-picker" id="colorPicker"></div>
+    <div class="fgroup">
+      <label class="flabel">Color</label>
+      <div class="color-row" id="colorPicker"></div>
     </div>
     <div class="modal-btns">
-      <button class="btn-cancel-sm" onclick="closeModal()">Cancelar</button>
-      <button class="btn-confirm" style="flex:1" onclick="crearRamo()">Crear ramo</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('moRamo').classList.remove('open')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1" onclick="crearRamo()">Crear ramo</button>
     </div>
   </div>
 </div>
 
-<!-- ══ TOAST ══ -->
+<!-- ══ MODAL PREMIUM ══ -->
+<div class="overlay" id="moPremium" onclick="closeOverlay(event,'moPremium')">
+  <div class="modal premium-modal">
+    <div class="premium-icon">⚡</div>
+    <div class="premium-title">Desbloquea Promedius Premium</div>
+    <div class="premium-sub">Lleva el control de todos tus ramos sin límites y accede a funciones exclusivas.</div>
+    <div class="premium-features">
+      <div class="pf-item"><span class="pf-icon">📚</span> Ramos ilimitados</div>
+      <div class="pf-item"><span class="pf-icon">📝</span> Evaluaciones ilimitadas por ramo</div>
+      <div class="pf-item"><span class="pf-icon">☁️</span> Respaldo en la nube entre dispositivos</div>
+      <div class="pf-item"><span class="pf-icon">📊</span> Estadísticas avanzadas y gráficos</div>
+      <div class="pf-item"><span class="pf-icon">🎯</span> Simulador de escenarios de notas</div>
+    </div>
+    <div class="premium-price">$3.990 <span style="font-size:16px;color:var(--muted)">/mes</span></div>
+    <div class="premium-price-sub">o $29.990/año — ahorra 37%</div>
+    <button class="btn btn-primary btn-full" style="margin-bottom:10px;background:linear-gradient(135deg,#F7C948,#ff8c00);box-shadow:0 4px 20px rgba(247,201,72,0.3)">
+      ⚡ Actualizar a Premium
+    </button>
+    <button class="btn btn-ghost btn-full btn-sm" onclick="document.getElementById('moPremium').classList.remove('open')">Ahora no</button>
+  </div>
+</div>
 
+<!-- ══ TOAST ══ -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Supabase init ─────────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://yfpgrcgxpstzksahelnx.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlmcGdyY2d4cHN0emtzYWhlbG54Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNzY3NjcsImV4cCI6MjA5Mzc1Mjc2N30.FL77BCNNr75DZjdLI9-SlB17deKTSwzDe2h8TofipCY';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── State ─────────────────────────────────────────────────────────────────────
-let currentUser = null;
-let ramos = [];
-let evaluaciones = {};
-let expandedRamos = {};
-let selectedColor = '#7C5CFC';
-let currentTab = 'register';
-let savingEvals = {};
-
+// ── Constants ─────────────────────────────────────────────────────────────────
+const FREE_RAMOS = 1;
+const FREE_EVALS = 2;
 const COLORS = ['#7C5CFC','#00C98D','#FF6B6B','#F7C948','#FF8C42','#4F8EF7','#E07BFF','#00C9C9','#FF6BCC','#A8FF6B'];
+const NOTA_APROBACION = 4.0;
+const EXAMEN_KEY = 'examen final'; // lowercase match
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── State ─────────────────────────────────────────────────────────────────────
+let user = null;
+let userPlan = 'free'; // 'free' | 'premium'
+let ramos = [];
+let evals = {};
+let expanded = {};
+let selColor = COLORS[0];
+let saveTimers = {};
+
+// ── Utils ─────────────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  $(id).classList.add('active');
   window.scrollTo(0,0);
 }
 
-function showAuth(tab) {
-  showPage('auth');
-  switchTab(tab);
-}
+function showAuth(tab) { showPage('auth'); switchTab(tab); }
 
 function switchTab(tab) {
-  currentTab = tab;
-  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
-  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
-  document.getElementById('nameGroup').style.display = tab === 'register' ? 'block' : 'none';
-  document.getElementById('authTitle').textContent = tab === 'register' ? 'Crear cuenta' : 'Bienvenido de vuelta';
-  document.getElementById('authSub').textContent = tab === 'register' ? 'Empieza gratis, sin tarjeta de crédito' : 'Ingresa tus datos para continuar';
-  document.getElementById('authBtn').textContent = tab === 'register' ? 'Crear cuenta' : 'Iniciar sesión';
-  hideAuthMessages();
+  const isReg = tab === 'register';
+  $('tabReg').classList.toggle('active', isReg);
+  $('tabLog').classList.toggle('active', !isReg);
+  $('nameGroup').style.display = isReg ? 'block' : 'none';
+  $('authTitle').textContent = isReg ? 'Crear cuenta' : 'Bienvenido de vuelta';
+  $('authSub').textContent = isReg ? 'Empieza gratis, sin tarjeta de crédito' : 'Ingresa tus datos para continuar';
+  $('authBtn').textContent = isReg ? 'Crear cuenta' : 'Iniciar sesión';
+  $('authBtn').onclick = handleAuth;
+  hideAlerts();
+  window._authTab = tab;
 }
+window._authTab = 'register';
 
-function showAuthError(msg) {
-  const el = document.getElementById('authError');
-  el.textContent = msg; el.style.display = 'block';
-  document.getElementById('authSuccess').style.display = 'none';
+function showAlert(id, msg) {
+  $(id).textContent = msg; $(id).style.display = 'block';
+  ['authErr','authOk'].forEach(x => { if(x!==id) $(x).style.display='none'; });
 }
+function hideAlerts() { $('authErr').style.display='none'; $('authOk').style.display='none'; }
 
-function showAuthSuccess(msg) {
-  const el = document.getElementById('authSuccess');
-  el.textContent = msg; el.style.display = 'block';
-  document.getElementById('authError').style.display = 'none';
-}
-
-function hideAuthMessages() {
-  document.getElementById('authError').style.display = 'none';
-  document.getElementById('authSuccess').style.display = 'none';
-}
-
-function toast(msg, type = '') {
-  const el = document.getElementById('toast');
+function toast(msg, type='') {
+  const el = $('toast');
   el.textContent = msg;
   el.className = 'toast show ' + type;
-  setTimeout(() => el.classList.remove('show'), 2500);
+  setTimeout(() => el.classList.remove('show'), 2600);
 }
 
-function noteColor(n) {
-  if (n === null) return 'c-muted';
-  if (n >= 5.5) return 'c-green';
-  if (n >= 4.0) return 'c-yellow';
-  return 'c-red';
+function noteClass(n) {
+  if (n === null || n === undefined) return 'cm';
+  if (n >= 5.5) return 'cg';
+  if (n >= 4.0) return 'cy';
+  return 'cr';
+}
+
+function isExamen(nombre) {
+  return nombre.trim().toLowerCase() === EXAMEN_KEY;
 }
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 async function handleAuth() {
-  const email = document.getElementById('inputEmail').value.trim();
-  const password = document.getElementById('inputPassword').value;
-  const name = document.getElementById('inputName').value.trim();
+  const email = $('iEmail').value.trim();
+  const pass = $('iPass').value;
+  const name = $('iName').value.trim();
+  const tab = window._authTab;
 
-  if (!email || !password) return showAuthError('Completa todos los campos.');
-  if (currentTab === 'register' && password.length < 6) return showAuthError('La contraseña debe tener al menos 6 caracteres.');
+  if (!email || !pass) return showAlert('authErr', 'Completa todos los campos.');
+  if (tab === 'register' && pass.length < 6) return showAlert('authErr', 'La contraseña debe tener mínimo 6 caracteres.');
 
-  const btn = document.getElementById('authBtn');
-  btn.textContent = '...'; btn.disabled = true;
-  hideAuthMessages();
+  const btn = $('authBtn');
+  btn.textContent = '...'; btn.disabled = true; hideAlerts();
 
-  if (currentTab === 'register') {
-    const { error } = await sb.auth.signUp({ email, password, options: { data: { name } } });
-    if (error) showAuthError(error.message);
-    else showAuthSuccess('¡Cuenta creada! Revisa tu correo para confirmar. Luego inicia sesión.');
+  if (tab === 'register') {
+    const { error } = await sb.auth.signUp({ email, password: pass, options: { data: { name } } });
+    if (error) showAlert('authErr', 'Error: ' + error.message);
+    else showAlert('authOk', '¡Cuenta creada! Revisa tu correo para confirmar, luego inicia sesión.');
   } else {
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) showAuthError('Correo o contraseña incorrectos.');
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) showAlert('authErr', 'Correo o contraseña incorrectos.');
     else await enterApp(data.user);
   }
 
-  btn.textContent = currentTab === 'register' ? 'Crear cuenta' : 'Iniciar sesión';
+  btn.textContent = tab === 'register' ? 'Crear cuenta' : 'Iniciar sesión';
   btn.disabled = false;
 }
 
 async function handleLogout() {
   await sb.auth.signOut();
-  currentUser = null; ramos = []; evaluaciones = {};
+  user = null; ramos = []; evals = {};
   showPage('landing');
 }
 
-async function enterApp(user) {
-  currentUser = user;
-  const name = user.user_metadata?.name || user.email.split('@')[0];
-  document.getElementById('navUser').textContent = name;
+async function enterApp(u) {
+  user = u;
+  const name = u.user_metadata?.name || u.email.split('@')[0];
+  $('navUser').textContent = name;
   showPage('app');
   await loadData();
 }
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 async function loadData() {
-  document.getElementById('ramosList').innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+  $('ramosList').innerHTML = '<div class="loader"><div class="spin"></div></div>';
 
-  const { data: ramosData } = await sb.from('ramos').select('*').order('created_at');
-  ramos = ramosData || [];
+  const [{ data: rd }, { data: ed }] = await Promise.all([
+    sb.from('ramos').select('*').order('created_at'),
+    sb.from('evaluaciones').select('*').order('created_at'),
+  ]);
 
-  const { data: evalsData } = await sb.from('evaluaciones').select('*').order('created_at');
-  evaluaciones = {};
-  (evalsData || []).forEach(e => {
-    if (!evaluaciones[e.ramo_id]) evaluaciones[e.ramo_id] = [];
-    evaluaciones[e.ramo_id].push(e);
+  ramos = rd || [];
+  evals = {};
+  (ed || []).forEach(e => {
+    if (!evals[e.ramo_id]) evals[e.ramo_id] = [];
+    evals[e.ramo_id].push(e);
   });
 
   renderAll();
@@ -1109,363 +864,398 @@ async function loadData() {
 
 // ── Cálculo ───────────────────────────────────────────────────────────────────
 function calcRamo(ramoId) {
-  const evals = evaluaciones[ramoId] || [];
-  let sumPeso = 0, sumPonderado = 0, totalPct = 0;
+  const evList = evals[ramoId] || [];
+  let sumPeso = 0, sumPond = 0, totalPct = 0;
 
-  evals.forEach(e => {
-    totalPct += e.ponderacion;
-    if (e.nota !== null && e.nota !== undefined && e.nota !== '') {
-      sumPonderado += e.nota * (e.ponderacion / 100);
-      sumPeso += e.ponderacion / 100;
+  evList.forEach(e => {
+    totalPct += Number(e.ponderacion);
+    const n = e.nota !== null && e.nota !== undefined && e.nota !== '' ? Number(e.nota) : null;
+    if (n !== null) {
+      sumPond += n * (Number(e.ponderacion) / 100);
+      sumPeso += Number(e.ponderacion) / 100;
     }
   });
 
-  const promedio = sumPeso > 0 ? Math.round((sumPonderado / sumPeso) * 10) / 10 : null;
-  const completado = totalPct > 0 ? Math.round((sumPeso * 100) / totalPct * 100) : 0;
+  const promedio = sumPeso > 0 ? Math.round((sumPond / sumPeso) * 10) / 10 : null;
+  const completado = sumPeso > 0 ? Math.round((sumPeso * 100) / Math.max(totalPct / 100, 0.01) * 10) / 10 : 0;
 
-  // Nota mínima para aprobar (4.0)
-  let notaMin = null;
-  const pctRestante = totalPct / 100 - sumPeso;
-  if (pctRestante > 0.001) {
-    const needed = (4.0 - sumPonderado) / pctRestante;
-    notaMin = Math.round(needed * 10) / 10;
-    if (notaMin < 1) notaMin = 1.0;
-    if (notaMin > 7) notaMin = null; // imposible
+  // Examen final
+  const examen = evList.find(e => isExamen(e.nombre));
+  let examenInfo = null;
+
+  if (examen) {
+    const pctEx = Number(examen.ponderacion) / 100;
+    // Suma ponderada sin contar examen
+    let sumSinEx = 0, pesySinEx = 0;
+    evList.forEach(e => {
+      if (isExamen(e.nombre)) return;
+      const n = e.nota !== null && e.nota !== undefined ? Number(e.nota) : null;
+      if (n !== null) {
+        sumSinEx += n * (Number(e.ponderacion) / 100);
+        pesySinEx += Number(e.ponderacion) / 100;
+      }
+    });
+
+    // Si ya tiene nota en el examen, usar esa
+    const notaExamen = examen.nota !== null && examen.nota !== undefined ? Number(examen.nota) : null;
+
+    if (notaExamen !== null) {
+      // Ya ingresó el examen, mostrar resultado final
+      examenInfo = { tipo: 'ingresado' };
+    } else {
+      // Calcular qué necesita
+      // promedio_final = sumSinEx + notaEx * pctEx >= 4.0
+      // notaEx = (4.0 - sumSinEx) / pctEx
+      const needed = (NOTA_APROBACION - sumSinEx) / pctEx;
+
+      if (sumSinEx >= NOTA_APROBACION) {
+        // Ya aprueba aunque saque 1
+        examenInfo = { tipo: 'ya_aprobado', minimo: 1.0 };
+      } else if (needed > 7.0) {
+        examenInfo = { tipo: 'imposible' };
+      } else {
+        examenInfo = { tipo: 'necesita', nota: Math.ceil(needed * 10) / 10 };
+      }
+    }
   }
 
-  return { promedio, completado, notaMin, totalPct };
+  return { promedio, completado, totalPct, examenInfo };
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
 function renderAll() {
-  renderRamos();
   renderSummary();
+  renderRamos();
 }
 
 function renderSummary() {
-  const promedios = ramos.map(r => calcRamo(r.id).promedio).filter(p => p !== null);
-  const general = promedios.length > 0 ? Math.round(promedios.reduce((a,b) => a+b,0) / promedios.length * 10) / 10 : null;
-  const aprobados = ramos.filter(r => { const p = calcRamo(r.id).promedio; return p !== null && p >= 4.0; }).length;
+  const proms = ramos.map(r => calcRamo(r.id).promedio).filter(p => p !== null);
+  const gen = proms.length ? Math.round(proms.reduce((a,b)=>a+b,0)/proms.length*10)/10 : null;
+  const aprov = ramos.filter(r => { const p=calcRamo(r.id).promedio; return p!==null && p>=NOTA_APROBACION; }).length;
 
-  const promEl = document.getElementById('sumPromedio');
-  promEl.textContent = general !== null ? general.toFixed(1) : '—';
-  promEl.className = 'summary-value ' + (general !== null ? noteColor(general) : 'c-accent');
-  document.getElementById('sumRamos').textContent = ramos.length;
-  document.getElementById('sumAprobados').textContent = aprobados;
+  const pe = $('sumProm');
+  pe.textContent = gen !== null ? gen.toFixed(1) : '—';
+  pe.className = 'sum-val ' + (gen!==null ? noteClass(gen) : 'cm');
+  $('sumRamos').textContent = ramos.length;
+  $('sumAprov').textContent = aprov;
 }
 
 function renderRamos() {
-  const container = document.getElementById('ramosList');
-
-  if (ramos.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <span class="empty-icon">📚</span>
+  const c = $('ramosList');
+  if (!ramos.length) {
+    c.innerHTML = `
+      <div class="empty">
+        <span class="empty-emoji">📚</span>
         <div class="empty-title">Sin ramos todavía</div>
-        <div class="empty-sub">Agrega tu primer ramo y comienza a registrar tus notas.</div>
-        <button class="btn-primary" onclick="openModal()">+ Agregar primer ramo</button>
+        <div class="empty-sub">Agrega tu primer ramo para empezar a registrar tus notas y calcular tu promedio.</div>
+        <button class="btn btn-primary" onclick="openModal()">+ Agregar primer ramo</button>
       </div>`;
     return;
   }
-
-  container.innerHTML = '';
-  ramos.forEach(ramo => container.appendChild(buildRamoCard(ramo)));
+  c.innerHTML = '';
+  ramos.forEach(r => c.appendChild(buildCard(r)));
 }
 
-function buildRamoCard(ramo) {
-  const isOpen = !!expandedRamos[ramo.id];
-  const { promedio, completado, notaMin, totalPct } = calcRamo(ramo.id);
-  const evals = evaluaciones[ramo.id] || [];
+function buildCard(ramo) {
+  const isOpen = !!expanded[ramo.id];
+  const { promedio, completado, totalPct, examenInfo } = calcRamo(ramo.id);
+  const evList = evals[ramo.id] || [];
 
   const card = document.createElement('div');
-  card.className = 'ramo-card';
-  card.id = 'card-' + ramo.id;
+  card.className = 'ramo';
+  card.id = 'rc-' + ramo.id;
   if (isOpen) {
-    card.style.borderColor = ramo.color + '44';
-    card.style.boxShadow = `0 4px 24px ${ramo.color}18`;
+    card.style.borderColor = ramo.color + '50';
+    card.style.boxShadow = `0 6px 28px ${ramo.color}15`;
   }
 
-  const pctRestante = 100 - totalPct;
-  const pctLabel = totalPct === 100 ? '100% ponderado' : `${Math.round(totalPct)}% / ${Math.round(pctRestante)}% sin asignar`;
+  const pctLeft = Math.max(0, 100 - totalPct);
+  const pctLabel = totalPct >= 100 ? '100% ponderado' : `${Math.round(totalPct)}% asignado · ${Math.round(pctLeft)}% restante`;
 
-  // Stats
-  const notaMinStr = notaMin !== null ? notaMin.toFixed(1) : (promedio !== null && promedio >= 4.0 ? '✓' : '—');
-  const notaMinColor = notaMin === null ? (promedio !== null && promedio >= 4.0 ? 'c-green' : 'c-muted') : (notaMin <= 4 ? 'c-green' : notaMin <= 5.5 ? 'c-yellow' : 'c-red');
+  let examenHTML = '';
+  if (isOpen) {
+    const hasExamen = evList.some(e => isExamen(e.nombre));
+    if (!hasExamen) {
+      examenHTML = `<div class="examen-alert info">💡 Agrega una evaluación llamada <strong>"Examen Final"</strong> para calcular qué nota necesitas en el examen para aprobar.</div>`;
+    } else if (examenInfo) {
+      if (examenInfo.tipo === 'ya_aprobado') {
+        examenHTML = `<div class="examen-alert pass">✅ Ya estás aprobado aunque te saques un 1.0 en el examen.</div>`;
+      } else if (examenInfo.tipo === 'imposible') {
+        examenHTML = `<div class="examen-alert fail">❌ No puedes aprobar el ramo matemáticamente.</div>`;
+      } else if (examenInfo.tipo === 'necesita') {
+        const nc = examenInfo.nota <= 4 ? 'pass' : examenInfo.nota <= 5.5 ? 'need' : 'fail';
+        examenHTML = `<div class="examen-alert ${nc}">🎯 Necesitas un <strong>${examenInfo.nota.toFixed(1)}</strong> en el Examen Final para aprobar el ramo.</div>`;
+      }
+    }
+  }
+
+  const evalsHTML = evList.map(e => buildEvalRow(ramo.id, e)).join('');
 
   card.innerHTML = `
-    <div class="ramo-header" onclick="toggleRamo('${ramo.id}')">
-      <div class="ramo-left">
-        <div class="ramo-color-dot" style="background:${ramo.color};box-shadow:0 0 8px ${ramo.color}80"></div>
-        <span class="ramo-nombre">${ramo.nombre}</span>
+    <div class="ramo-head" onclick="toggleRamo('${ramo.id}')">
+      <div class="ramo-head-left">
+        <div class="rdot" style="background:${ramo.color};box-shadow:0 0 8px ${ramo.color}90"></div>
+        <span class="rname">${ramo.nombre}</span>
       </div>
-      <div class="ramo-right">
-        <span class="ramo-prom ${noteColor(promedio)}">${promedio !== null ? promedio.toFixed(1) : '—'}</span>
-        <span class="ramo-chevron ${isOpen ? 'open' : ''}">▾</span>
+      <div class="ramo-head-right">
+        <span class="rprom ${noteClass(promedio)}">${promedio!==null?promedio.toFixed(1):'—'}</span>
+        <span class="rchev ${isOpen?'open':''}">▾</span>
       </div>
     </div>
     ${isOpen ? `
     <div class="ramo-body open">
-      <div class="ramo-divider"></div>
+      <div class="rdivider"></div>
 
-      <div class="progress-wrap">
-        <div class="progress-label">
-          <span>Progreso del ramo</span>
+      <div class="prog-wrap">
+        <div class="prog-labels">
+          <span>Ponderación total</span>
           <span style="color:${ramo.color}">${pctLabel}</span>
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width:${completado}%;background:${ramo.color}"></div>
+        <div class="prog-bar">
+          <div class="prog-fill" style="width:${Math.min(totalPct,100)}%;background:${ramo.color}"></div>
         </div>
       </div>
 
-      <div class="stats-row">
-        <div class="stat-box">
-          <div class="stat-val ${noteColor(promedio)}">${promedio !== null ? promedio.toFixed(1) : '—'}</div>
-          <div class="stat-lbl">Promedio actual</div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-v ${noteClass(promedio)}">${promedio!==null?promedio.toFixed(1):'—'}</div>
+          <div class="stat-l">Promedio actual</div>
         </div>
-        <div class="stat-box">
-          <div class="stat-val ${notaMinColor}">${notaMinStr}</div>
-          <div class="stat-lbl">Mínimo para aprobar</div>
+        <div class="stat">
+          <div class="stat-v" style="color:${ramo.color}">${Math.round(completado)}%</div>
+          <div class="stat-l">% completado</div>
         </div>
-        <div class="stat-box">
-          <div class="stat-val" style="color:${ramo.color}">${completado}%</div>
-          <div class="stat-lbl">Completado</div>
+        <div class="stat">
+          <div class="stat-v ${promedio!==null&&promedio>=NOTA_APROBACION?'cg':'cr'}">${promedio!==null?(promedio>=NOTA_APROBACION?'✓':'✗'):'—'}</div>
+          <div class="stat-l">Estado</div>
         </div>
       </div>
 
-      <div class="eval-list" id="evals-${ramo.id}">
-        ${evals.map(e => buildEvalRow(ramo.id, e)).join('')}
-      </div>
+      ${examenHTML}
 
-      <div class="add-eval-form" id="addForm-${ramo.id}">
-        <div class="mini-label">Nombre de la evaluación</div>
-        <input class="mini-input" id="evalNombre-${ramo.id}" placeholder="Ej: Prueba 1, Control, Tarea..."/>
-        <div style="height:8px"></div>
-        <div class="add-eval-row2">
+      <div class="eval-list" id="el-${ramo.id}">${evalsHTML}</div>
+
+      <div class="add-form" id="af-${ramo.id}">
+        <div class="mini-lbl">Nombre de la evaluación</div>
+        <input class="mini-input" id="an-${ramo.id}" placeholder="Ej: Prueba 1, Control, Examen Final..."/>
+        <div class="add-form-grid">
           <div>
-            <div class="mini-label">Ponderación (%)</div>
-            <input class="mini-input" id="evalPct-${ramo.id}" type="number" min="1" max="100" placeholder="Ej: 30"/>
+            <div class="mini-lbl">Ponderación (%)</div>
+            <input class="mini-input" id="ap-${ramo.id}" type="number" min="1" max="100" placeholder="Ej: 30"/>
           </div>
           <div>
-            <div class="mini-label">Nota (opcional)</div>
-            <input class="mini-input" id="evalNota-${ramo.id}" type="number" min="1" max="7" step="0.1" placeholder="1.0 – 7.0"/>
+            <div class="mini-lbl">Nota (opcional)</div>
+            <input class="mini-input" id="ag-${ramo.id}" type="number" min="1" max="7" step="0.1" placeholder="1.0 – 7.0"/>
           </div>
         </div>
-        <div class="add-eval-btns">
-          <button class="btn-cancel-sm" onclick="toggleAddForm('${ramo.id}')">Cancelar</button>
-          <button class="btn-confirm" onclick="agregarEval('${ramo.id}')">Agregar</button>
+        <div class="add-form-btns">
+          <button class="btn btn-ghost btn-sm" onclick="toggleForm('${ramo.id}')">Cancelar</button>
+          <button class="btn btn-primary btn-sm" style="flex:1" onclick="agregarEval('${ramo.id}')">Agregar</button>
         </div>
       </div>
 
-      <button class="btn-add-eval" onclick="toggleAddForm('${ramo.id}')">+ Agregar evaluación</button>
+      <button class="btn-add-eval" onclick="toggleForm('${ramo.id}')">+ Agregar evaluación</button>
 
       <div class="ramo-actions">
-        <button class="btn-delete-ramo" onclick="eliminarRamo('${ramo.id}')">🗑 Eliminar ramo</button>
+        <button class="btn btn-danger" onclick="eliminarRamo('${ramo.id}')">🗑 Eliminar ramo</button>
       </div>
     </div>` : ''}
   `;
-
   return card;
 }
 
 function buildEvalRow(ramoId, e) {
-  const notaVal = (e.nota !== null && e.nota !== undefined) ? e.nota : '';
-  const nc = e.nota !== null && e.nota !== undefined ? noteColor(e.nota) : '';
+  const val = (e.nota !== null && e.nota !== undefined) ? e.nota : '';
+  const examen = isExamen(e.nombre);
   return `
-    <div class="eval-row" id="evalrow-${e.id}">
-      <span class="eval-nombre">${e.nombre}</span>
+    <div class="eval-row ${examen?'is-examen':''}" id="er-${e.id}">
+      <span class="eval-name" title="${e.nombre}">${e.nombre}${examen?' 🎯':''}</span>
       <span class="eval-pct">${e.ponderacion}%</span>
-      <input class="eval-input ${nc}" type="number" min="1" max="7" step="0.1"
-        placeholder="—" value="${notaVal}"
-        onchange="updateNota('${ramoId}','${e.id}',this)"
+      <input class="eval-input ${val!==''?noteClass(Number(val)):''}"
+        type="number" min="1" max="7" step="0.1"
+        placeholder="—" value="${val}"
         oninput="updateNota('${ramoId}','${e.id}',this)"
       />
-      <button class="eval-delete" onclick="eliminarEval('${ramoId}','${e.id}')">×</button>
+      <button class="eval-del" onclick="eliminarEval('${ramoId}','${e.id}')">×</button>
     </div>`;
 }
 
-// ── Acciones ──────────────────────────────────────────────────────────────────
+// ── Toggle ────────────────────────────────────────────────────────────────────
 function toggleRamo(ramoId) {
-  expandedRamos[ramoId] = !expandedRamos[ramoId];
+  expanded[ramoId] = !expanded[ramoId];
   const ramo = ramos.find(r => r.id === ramoId);
-  const old = document.getElementById('card-' + ramoId);
-  old.replaceWith(buildRamoCard(ramo));
+  $('rc-'+ramoId).replaceWith(buildCard(ramo));
 }
 
-function toggleAddForm(ramoId) {
-  const form = document.getElementById('addForm-' + ramoId);
-  form.classList.toggle('open');
-  if (form.classList.contains('open')) {
-    document.getElementById('evalNombre-' + ramoId).focus();
-  }
+function toggleForm(ramoId) {
+  const f = $('af-'+ramoId);
+  f.classList.toggle('open');
+  if (f.classList.contains('open')) $('an-'+ramoId).focus();
 }
 
-async function updateNota(ramoId, evalId, input) {
-  const val = parseFloat(input.value);
-  const nota = (!input.value || isNaN(val)) ? null : Math.min(7, Math.max(1, val));
+// ── Update nota ───────────────────────────────────────────────────────────────
+function updateNota(ramoId, evalId, input) {
+  const raw = input.value;
+  const n = raw === '' ? null : Math.min(7, Math.max(1, parseFloat(raw)));
+  if (raw !== '' && isNaN(n)) return;
 
-  // Update local state
-  const evals = evaluaciones[ramoId] || [];
-  const ev = evals.find(e => e.id === evalId);
-  if (ev) ev.nota = nota;
+  // Update local
+  const evList = evals[ramoId] || [];
+  const ev = evList.find(e => e.id === evalId);
+  if (ev) ev.nota = n;
 
-  // Color input
-  input.className = 'eval-input ' + (nota !== null ? noteColor(nota) : '');
+  input.className = 'eval-input ' + (n !== null ? noteClass(n) : '');
 
-  // Update summary & stats in card without full re-render
+  // Update card stats without full re-render
   updateCardStats(ramoId);
   renderSummary();
 
   // Debounce save
-  clearTimeout(savingEvals[evalId]);
-  savingEvals[evalId] = setTimeout(async () => {
-    await sb.from('evaluaciones').update({ nota }).eq('id', evalId);
-  }, 700);
+  clearTimeout(saveTimers[evalId]);
+  saveTimers[evalId] = setTimeout(() => {
+    sb.from('evaluaciones').update({ nota: n }).eq('id', evalId);
+  }, 800);
 }
 
 function updateCardStats(ramoId) {
-  const { promedio, completado, notaMin } = calcRamo(ramoId);
-  const card = document.getElementById('card-' + ramoId);
+  const { promedio, completado, examenInfo } = calcRamo(ramoId);
+  const card = $('rc-'+ramoId);
   if (!card) return;
 
-  // Update header prom
-  const promEl = card.querySelector('.ramo-prom');
-  if (promEl) {
-    promEl.textContent = promedio !== null ? promedio.toFixed(1) : '—';
-    promEl.className = 'ramo-prom ' + noteColor(promedio);
+  const rp = card.querySelector('.rprom');
+  if (rp) { rp.textContent = promedio!==null?promedio.toFixed(1):'—'; rp.className='rprom '+noteClass(promedio); }
+
+  const svs = card.querySelectorAll('.stat-v');
+  if (svs.length >= 3) {
+    svs[0].textContent = promedio!==null?promedio.toFixed(1):'—';
+    svs[0].className = 'stat-v '+noteClass(promedio);
+    svs[2].textContent = promedio!==null?(promedio>=NOTA_APROBACION?'✓':'✗'):'—';
+    svs[2].className = 'stat-v '+(promedio!==null&&promedio>=NOTA_APROBACION?'cg':'cr');
   }
 
-  // Update stat boxes
-  const statVals = card.querySelectorAll('.stat-val');
-  if (statVals.length >= 3) {
-    statVals[0].textContent = promedio !== null ? promedio.toFixed(1) : '—';
-    statVals[0].className = 'stat-val ' + noteColor(promedio);
+  // Update examen alert
+  const evList = evals[ramoId] || [];
+  const hasExamen = evList.some(e => isExamen(e.nombre));
+  let newAlert = '';
+  if (!hasExamen) {
+    newAlert = `<div class="examen-alert info">💡 Agrega una evaluación llamada <strong>"Examen Final"</strong> para calcular qué nota necesitas en el examen para aprobar.</div>`;
+  } else if (examenInfo) {
+    if (examenInfo.tipo === 'ya_aprobado') newAlert = `<div class="examen-alert pass">✅ Ya estás aprobado aunque te saques un 1.0 en el examen.</div>`;
+    else if (examenInfo.tipo === 'imposible') newAlert = `<div class="examen-alert fail">❌ No puedes aprobar el ramo matemáticamente.</div>`;
+    else if (examenInfo.tipo === 'necesita') {
+      const nc = examenInfo.nota<=4?'pass':examenInfo.nota<=5.5?'need':'fail';
+      newAlert = `<div class="examen-alert ${nc}">🎯 Necesitas un <strong>${examenInfo.nota.toFixed(1)}</strong> en el Examen Final para aprobar el ramo.</div>`;
+    }
+  }
 
-    const ramo = ramos.find(r => r.id === ramoId);
-    const notaMinStr = notaMin !== null ? notaMin.toFixed(1) : (promedio !== null && promedio >= 4.0 ? '✓' : '—');
-    const notaMinColor = notaMin === null ? (promedio !== null && promedio >= 4.0 ? 'c-green' : 'c-muted') : (notaMin <= 4 ? 'c-green' : notaMin <= 5.5 ? 'c-yellow' : 'c-red');
-    statVals[1].textContent = notaMinStr;
-    statVals[1].className = 'stat-val ' + notaMinColor;
-
-    statVals[2].textContent = completado + '%';
-
-    // Progress bar
-    const fill = card.querySelector('.progress-fill');
-    if (fill) fill.style.width = completado + '%';
+  const existing = card.querySelector('.examen-alert');
+  if (existing) existing.outerHTML = newAlert;
+  else {
+    const evalList = card.querySelector('.eval-list');
+    if (evalList && newAlert) evalList.insertAdjacentHTML('beforebegin', newAlert);
   }
 }
 
+// ── Agregar eval ──────────────────────────────────────────────────────────────
 async function agregarEval(ramoId) {
-  const nombre = document.getElementById('evalNombre-' + ramoId).value.trim();
-  const pct = parseFloat(document.getElementById('evalPct-' + ramoId).value);
-  const notaRaw = document.getElementById('evalNota-' + ramoId).value;
-  const nota = notaRaw ? parseFloat(notaRaw) : null;
+  const nombre = $('an-'+ramoId).value.trim();
+  const pct = parseFloat($('ap-'+ramoId).value);
+  const notaRaw = $('ag-'+ramoId).value;
+  const nota = notaRaw ? Math.min(7, Math.max(1, parseFloat(notaRaw))) : null;
 
-  if (!nombre) return toast('Ingresa un nombre', 'error');
-  if (!pct || pct <= 0 || pct > 100) return toast('Ponderación inválida (1-100)', 'error');
+  if (!nombre) return toast('Ingresa un nombre para la evaluación', 'err');
+  if (!pct || pct <= 0 || pct > 100) return toast('Ponderación inválida (1–100)', 'err');
 
-  // Validar que no supere 100%
-  const evals = evaluaciones[ramoId] || [];
-  const totalActual = evals.reduce((s, e) => s + e.ponderacion, 0);
-  if (totalActual + pct > 100) return toast(`Solo quedan ${100 - totalActual}% disponibles`, 'error');
+  const evList = evals[ramoId] || [];
 
-  const { data, error } = await sb.from('evaluaciones').insert({
-    ramo_id: ramoId,
-    nombre,
-    ponderacion: pct,
-    nota: nota !== null && !isNaN(nota) ? nota : null,
-  }).select().single();
-
-  if (error) return toast('Error al guardar', 'error');
-
-  if (!evaluaciones[ramoId]) evaluaciones[ramoId] = [];
-  evaluaciones[ramoId].push(data);
-
-  // Re-render card
-  const ramo = ramos.find(r => r.id === ramoId);
-  const old = document.getElementById('card-' + ramoId);
-  old.replaceWith(buildRamoCard(ramo));
-  expandedRamos[ramoId] = true;
-  const newCard = document.getElementById('card-' + ramoId);
-  if (newCard) {
-    const ramo2 = ramos.find(r => r.id === ramoId);
-    newCard.replaceWith(buildRamoCard(ramo2));
+  // Freemium check
+  if (userPlan === 'free' && evList.length >= FREE_EVALS) {
+    return openPremium('eval');
   }
 
+  // Pct check
+  const totalActual = evList.reduce((s,e) => s+Number(e.ponderacion), 0);
+  if (totalActual + pct > 100) return toast(`Solo quedan ${Math.round(100-totalActual)}% disponibles`, 'err');
+
+  const { data, error } = await sb.from('evaluaciones')
+    .insert({ ramo_id: ramoId, nombre, ponderacion: pct, nota })
+    .select().single();
+
+  if (error) return toast('Error al guardar', 'err');
+
+  if (!evals[ramoId]) evals[ramoId] = [];
+  evals[ramoId].push(data);
+
+  const ramo = ramos.find(r => r.id === ramoId);
+  $('rc-'+ramoId).replaceWith(buildCard(ramo));
   renderSummary();
-  toast('Evaluación agregada ✓', 'success');
+  toast('Evaluación agregada ✓', 'ok');
 }
 
+// ── Eliminar eval ─────────────────────────────────────────────────────────────
 async function eliminarEval(ramoId, evalId) {
   await sb.from('evaluaciones').delete().eq('id', evalId);
-  evaluaciones[ramoId] = (evaluaciones[ramoId] || []).filter(e => e.id !== evalId);
-
+  evals[ramoId] = (evals[ramoId]||[]).filter(e => e.id !== evalId);
   const ramo = ramos.find(r => r.id === ramoId);
-  document.getElementById('card-' + ramoId).replaceWith(buildRamoCard(ramo));
+  $('rc-'+ramoId).replaceWith(buildCard(ramo));
   renderSummary();
   toast('Evaluación eliminada');
 }
 
+// ── Eliminar ramo ─────────────────────────────────────────────────────────────
 async function eliminarRamo(ramoId) {
   if (!confirm('¿Eliminar este ramo y todas sus evaluaciones?')) return;
   await sb.from('ramos').delete().eq('id', ramoId);
   ramos = ramos.filter(r => r.id !== ramoId);
-  delete evaluaciones[ramoId];
+  delete evals[ramoId];
   renderAll();
   toast('Ramo eliminado');
 }
 
-// ── Modal nuevo ramo ──────────────────────────────────────────────────────────
+// ── Modal ramo ────────────────────────────────────────────────────────────────
 function openModal() {
-  document.getElementById('modalOverlay').classList.add('open');
-  document.getElementById('modalNombre').value = '';
-  selectedColor = COLORS[0];
-  renderColorPicker();
-  setTimeout(() => document.getElementById('modalNombre').focus(), 100);
+  if (userPlan === 'free' && ramos.length >= FREE_RAMOS) return openPremium('ramo');
+  $('mNombre').value = '';
+  selColor = COLORS[0];
+  renderColors();
+  $('moRamo').classList.add('open');
+  setTimeout(() => $('mNombre').focus(), 100);
 }
 
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-}
-
-function closeModalOutside(e) {
-  if (e.target === document.getElementById('modalOverlay')) closeModal();
-}
-
-function renderColorPicker() {
-  const picker = document.getElementById('colorPicker');
-  picker.innerHTML = COLORS.map(c => `
-    <div class="color-opt ${c === selectedColor ? 'selected' : ''}"
-      style="background:${c}"
-      onclick="selectColor('${c}')">
-    </div>`).join('');
-}
-
-function selectColor(color) {
-  selectedColor = color;
-  renderColorPicker();
+function renderColors() {
+  $('colorPicker').innerHTML = COLORS.map(c =>
+    `<div class="copt ${c===selColor?'sel':''}" style="background:${c}" onclick="selColor='${c}';renderColors()"></div>`
+  ).join('');
 }
 
 async function crearRamo() {
-  const nombre = document.getElementById('modalNombre').value.trim();
-  if (!nombre) return toast('Ingresa un nombre', 'error');
+  const nombre = $('mNombre').value.trim();
+  if (!nombre) return toast('Ingresa un nombre para el ramo', 'err');
 
-  const { data, error } = await sb.from('ramos').insert({
-    user_id: currentUser.id,
-    nombre,
-    color: selectedColor,
-  }).select().single();
+  const { data, error } = await sb.from('ramos')
+    .insert({ user_id: user.id, nombre, color: selColor })
+    .select().single();
 
-  if (error) return toast('Error al crear', 'error');
+  if (error) return toast('Error al crear el ramo', 'err');
 
   ramos.push(data);
-  evaluaciones[data.id] = [];
-  expandedRamos[data.id] = true;
-  closeModal();
+  evals[data.id] = [];
+  expanded[data.id] = true;
+  $('moRamo').classList.remove('open');
   renderAll();
-  toast('Ramo creado ✓', 'success');
+  toast('Ramo creado ✓', 'ok');
 }
 
-// ── Session check ─────────────────────────────────────────────────────────────
+// ── Premium modal ─────────────────────────────────────────────────────────────
+function openPremium(ctx) {
+  $('moPremium').classList.add('open');
+}
+
+function closeOverlay(e, id) {
+  if (e.target === $(id)) $(id).classList.remove('open');
+}
+
+// ── Session ───────────────────────────────────────────────────────────────────
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
   if (session?.user) await enterApp(session.user);
@@ -1477,14 +1267,14 @@ async function init() {
   });
 }
 
-// Keyboard shortcuts
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
-  if (e.key === 'Enter' && document.getElementById('auth').classList.contains('active')) handleAuth();
+  if (e.key === 'Escape') {
+    ['moRamo','moPremium'].forEach(id => $(id).classList.remove('open'));
+  }
+  if (e.key === 'Enter' && $('auth').classList.contains('active')) handleAuth();
 });
 
 init();
 </script>
-
 </body>
 </html>
